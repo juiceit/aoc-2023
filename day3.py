@@ -3,28 +3,51 @@ import re
 with open("inputs/day3", "r") as f:
     lines = f.readlines()
 
+symbol_pattern = "[^\d\.\s]"
+
+
+def is_symbol_before(start, line):
+    return start > 0 and re.search(symbol_pattern, line[start - 1])
+
+
+def is_symbol_after(end, line):
+    return end < len(line) and re.search(symbol_pattern, line[end])
+
+
+def is_symbol_in_line(start, end, line):
+    return re.search(
+        symbol_pattern,
+        line[start:end],
+    )
+
+
+def is_symbol_above(start, end, line_above_index):
+    return line_above_index >= 0 and is_symbol_in_line(
+        start, end, lines[line_above_index]
+    )
+
+
+def is_symbol_below(start, end, line_below_index):
+    return line_below_index < len(lines) - 1 and is_symbol_in_line(
+        start, end, lines[line_below_index]
+    )
+
+
 # part 1
 valid_numbers = []
 for line_index, line in enumerate(lines):
-    numbers = re.findall("\d+", line)
-    last_index = 0
-    for number in numbers:
-        start = last_index + line[last_index:].index(number)
-        end = start + len(number)
-        last_index = end
+    number_matches = re.finditer("\d+", line)
+    for m in number_matches:
+        start, end = m.span()
+        number = m.group()
+        before_pos = max(0, start - 1)
+        after_pos = min(end + 1, len(line))
 
-        if start > 0 and re.search("[^\d\.\s]", line[start - 1]):
-            valid_numbers.append(int(number))
-        elif end < len(line) and re.search("[^\d\.\s]", line[end]):
-            valid_numbers.append(int(number))
-        elif line_index > 0 and re.search(
-            "[^\d\.\s]",
-            lines[line_index - 1][max(0, start - 1) : min(end + 1, len(line))],
-        ):
-            valid_numbers.append(int(number))
-        elif line_index < len(lines) - 1 and re.search(
-            "[^\d\.\s]",
-            lines[line_index + 1][max(0, start - 1) : min(end + 1, len(line))],
+        if (
+            is_symbol_before(start, line)
+            or is_symbol_after(end, line)
+            or is_symbol_above(before_pos, after_pos, line_index - 1)
+            or is_symbol_below(before_pos, after_pos, line_index + 1)
         ):
             valid_numbers.append(int(number))
 
