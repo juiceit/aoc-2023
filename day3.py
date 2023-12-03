@@ -54,12 +54,17 @@ for line_index, line in enumerate(lines):
 print(sum(valid_numbers))
 
 # part 2
-gears = []
-for line in lines:
-    line_gears = {}
-    for m in re.finditer("\*", line):
-        line_gears[m.start()] = []
-    gears.append(line_gears)
+gears = {}
+
+
+def add_number_to_gear(x, y, number):
+    if x not in gears:
+        gears[x] = {}
+    if y in gears[x]:
+        gears[x][y].append(number)
+    else:
+        gears[x][y] = [number]
+
 
 for line_index, line in enumerate(lines):
     number_matches = re.finditer("\d+", line)
@@ -70,25 +75,25 @@ for line_index, line in enumerate(lines):
         after_pos = min(end + 1, len(line))
 
         if is_pattern_before("\*", start, line):
-            gears[line_index][start - 1].append(number)
+            add_number_to_gear(line_index, start - 1, number)
         if is_pattern_after("\*", end, line):
-            gears[line_index][end].append(number)
+            add_number_to_gear(line_index, end, number)
         if line_index > 0:
             line_above = lines[line_index - 1][before_pos:after_pos]
             gear_matches = re.finditer("\*", line_above)
             for gm in gear_matches:
-                gears[line_index - 1][before_pos + gm.start()].append(number)
+                add_number_to_gear(line_index - 1, before_pos + gm.start(), number)
         if line_index < len(lines) - 1:
             line_below = lines[line_index + 1][before_pos:after_pos]
             gear_matches = re.finditer("\*", line_below)
             for gm in gear_matches:
-                gears[line_index + 1][before_pos + gm.start()].append(number)
+                add_number_to_gear(line_index + 1, before_pos + gm.start(), number)
 
 sum_gear_ratios = 0
 
-for line_gears in gears:
-    for key in line_gears:
-        if len(line_gears[key]) == 2:
-            sum_gear_ratios += line_gears[key][0] * line_gears[key][1]
+for x in gears:
+    for y in gears[x]:
+        if len(gears[x][y]) == 2:
+            sum_gear_ratios += gears[x][y][0] * gears[x][y][1]
 
 print(sum_gear_ratios)
