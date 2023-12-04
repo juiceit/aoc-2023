@@ -20,10 +20,10 @@ print(points)
 
 
 # part 2
-def add_copies(cards, line_index, number_of_wins):
+def add_copies(cards, line_index, number_of_wins, number_of_copies):
     for i in range(line_index + 1, line_index + number_of_wins + 1):
         if i < len(lines):
-            cards[i] += 1
+            cards[i] += number_of_copies
 
 
 cards = [1] * len(lines)
@@ -37,7 +37,6 @@ for line_index, line in enumerate(lines):
         if winning_number in my_numbers
     ]
 
-    for i in range(0, cards[line_index]):
-        add_copies(cards, line_index, len(matches))
+    add_copies(cards, line_index, len(matches), cards[line_index])
 
 print(sum(cards))
