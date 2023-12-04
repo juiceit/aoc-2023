@@ -1,3 +1,5 @@
+import numpy as np
+
 with open("inputs/day4", "r") as f:
     lines = f.readlines()
 
@@ -22,15 +24,9 @@ print(sum(map(calc_points, card_wins)))
 
 
 # part 2
-def add_copies(cards, index, number_of_wins, number_of_copies):
-    for i in range(index + 1, index + 1 + number_of_wins):
-        if i < len(card_wins):
-            cards[i] += number_of_copies
+card_copies = np.ones(len(lines), dtype=int)
 
+for i, wins in enumerate(card_wins):
+    card_copies[i + 1 : i + 1 + wins] += card_copies[i]
 
-cards = [1] * len(card_wins)
-
-for index, wins in enumerate(card_wins):
-    add_copies(cards, index, wins, cards[index])
-
-print(sum(cards))
+print(sum(card_copies))
