@@ -2,7 +2,14 @@ with open("inputs/day4", "r") as f:
     lines = f.readlines()
 
 # part 1
-points = 0
+def calc_points(wins):
+    if wins > 0:
+        return pow(2, wins - 1)
+    else:
+        return 0
+
+
+card_wins = []
 for line in lines:
     _, numbers = line.split(":")
     winning_numbers, my_numbers = map(lambda x: x.split(), numbers.split("|"))
@@ -13,30 +20,20 @@ for line in lines:
         if winning_number in my_numbers
     ]
 
-    if len(matches) > 0:
-        points += pow(2, len(matches) - 1)
+    card_wins.append(len(matches))
 
-print(points)
+print(sum(map(calc_points, card_wins)))
 
 
 # part 2
-def add_copies(cards, line_index, number_of_wins, number_of_copies):
-    for i in range(line_index + 1, line_index + number_of_wins + 1):
+def add_copies(cards, index, number_of_wins, number_of_copies):
+    for i in range(index + 1, index + 1 + number_of_wins):
         if i < len(lines):
             cards[i] += number_of_copies
 
 
 cards = [1] * len(lines)
-for line_index, line in enumerate(lines):
-    _, numbers = line.split(":")
-    winning_numbers, my_numbers = map(lambda x: x.split(), numbers.split("|"))
-
-    matches = [
-        winning_number
-        for winning_number in winning_numbers
-        if winning_number in my_numbers
-    ]
-
-    add_copies(cards, line_index, len(matches), cards[line_index])
+for index, wins in enumerate(card_wins):
+    add_copies(cards, index, wins, cards[index])
 
 print(sum(cards))
