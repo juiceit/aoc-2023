@@ -2,6 +2,9 @@ import numpy as np
 
 
 def parse_input():
+    def string_to_set(numbers):
+        return set(numbers.split())
+
     with open("inputs/day4", "r") as f:
         lines = f.readlines()
 
@@ -9,7 +12,7 @@ def parse_input():
 
     for line in lines:
         _, numbers = line.split(":")
-        winning_numbers, my_numbers = map(lambda x: set(x.split()), numbers.split("|"))
+        winning_numbers, my_numbers = map(string_to_set, numbers.split("|"))
         my_winning_numbers = winning_numbers.intersection(my_numbers)
         card_wins.append(len(my_winning_numbers))
 
