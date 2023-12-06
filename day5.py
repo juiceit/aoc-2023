@@ -1,5 +1,6 @@
 import re
 from tqdm import tqdm
+import math
 
 
 def parse_map_line(map_line):
@@ -54,19 +55,23 @@ def pair_seeds(seeds):
     return [(seeds[i], seeds[i + 1]) for i in range(0, len(seeds), 2)]
 
 
-def find_locations(seed_pair, maps):
+def find_lowest_location(seed_pair, maps):
     seeds = range(seed_pair[0], seed_pair[0] + seed_pair[1])
-    return (find_location(seed, maps) for seed in seeds)
+    lowest_location = math.inf
+    for seed in tqdm(seeds):
+        location = find_location(seed, maps)
+        lowest_location = min(location, lowest_location)
+    return lowest_location
 
 
 def solve_part2(seeds, maps):
     seed_pairs = pair_seeds(seeds)
-    locations = [
-        v
-        for seed_pair in tqdm(seed_pairs)
-        for v in tqdm(find_locations(seed_pair, maps), position=1)
-    ]
-    return sorted(locations)[0]
+    lowest_location = math.inf
+    for seed_pair in tqdm(seed_pairs):
+        location = find_lowest_location(seed_pair, maps)
+        lowest_location = min(location, lowest_location)
+        print(lowest_location)
+    return lowest_location
 
 
 if __name__ == "__main__":
